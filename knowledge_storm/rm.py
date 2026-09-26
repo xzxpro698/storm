@@ -747,10 +747,10 @@ class DuckDuckGoSearchRM(dspy.Retrieve):
         """
         super().__init__(k=k)
         try:
-            from duckduckgo_search import DDGS
+            from ddgs import DDGS
         except ImportError as err:
             raise ImportError(
-                "Duckduckgo requires `pip install duckduckgo_search`."
+                "Duckduckgo requires `pip install ddgs`."
             ) from err
         self.k = k
         self.webpage_helper = WebPageHelper(
@@ -762,8 +762,8 @@ class DuckDuckGoSearchRM(dspy.Retrieve):
         # All params for search can be found here:
         #   https://duckduckgo.com/duckduckgo-help-pages/settings/params/
 
-        # Sets the backend to be api
-        self.duck_duck_go_backend = "api"
+        # Use the DuckDuckGo backend explicitly to avoid DDGS auto fallback.
+        self.duck_duck_go_backend = "duckduckgo"
 
         # Only gets safe search results
         self.duck_duck_go_safe_search = safe_search

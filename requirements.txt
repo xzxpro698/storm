@@ -1,6 +1,8 @@
 dspy_ai==2.4.9
 wikipedia==1.4.0
-sentence-transformers
+sentence-transformers==2.2.2
+huggingface-hub==0.14.1
+ddgs==9.16.0
 toml
 langchain-text-splitters
 trafilatura
