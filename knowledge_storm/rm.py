@@ -5,9 +5,13 @@ from typing import Callable, Union, List
 import backoff
 import dspy
 import requests
-from dsp import backoff_hdlr, giveup_hdlr
+from dsp import backoff_hdlr
 
 from .utils import WebPageHelper
+
+
+def _ddgs_giveup_hdlr(exc):
+    return "rate limits" not in str(exc).lower()
 
 
 class YouRM(dspy.Retrieve):
@@ -791,7 +795,7 @@ class DuckDuckGoSearchRM(dspy.Retrieve):
         max_time=1000,
         max_tries=8,
         on_backoff=backoff_hdlr,
-        giveup=giveup_hdlr,
+        giveup=_ddgs_giveup_hdlr,
     )
     def request(self, query: str):
         results = self.ddgs.text(

@@ -73,6 +73,7 @@ class Encoder:
         self.embedding_model_name = None
         self.kargs = {}
         self.total_token_usage = 0
+        self.local_model = None
 
         # Initialize the appropriate embedding model
         encoder_type = encoder_type or os.getenv("ENCODER_API_TYPE")
@@ -89,9 +90,15 @@ class Encoder:
                 "api_base": api_base or os.getenv("AZURE_API_BASE"),
                 "api_version": api_version or os.getenv("AZURE_API_VERSION"),
             }
+        elif encoder_type.lower() == "local":
+            from sentence_transformers import SentenceTransformer
+
+            self.local_model = SentenceTransformer(
+                "paraphrase-MiniLM-L6-v2", device="cpu"
+            )
         else:
             raise ValueError(
-                f"Unsupported ENCODER_API_TYPE '{encoder_type}'. Supported types are 'openai', 'azure', 'together'."
+                f"Unsupported ENCODER_API_TYPE '{encoder_type}'. Supported types are 'openai', 'azure', 'local'."
             )
 
     def get_total_token_usage(self, reset: bool = False) -> int:
@@ -119,6 +126,8 @@ class Encoder:
         Returns:
             np.ndarray: The array of embeddings.
         """
+        if self.local_model is not None:
+            return np.asarray(self.local_model.encode(texts))
         return self._get_text_embeddings(texts, max_workers=max_workers)
 
     def _get_single_text_embedding(self, text):
